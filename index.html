@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PracticumEVG</title>
+<meta name="description" content="PracticumEVG · Control y gestión del alumnado en prácticas · Escuela Virgen de Guadalupe">
+<meta name="theme-color" content="#006a96">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PracticumEVG">
+<style>
+  :root{--evg:#006a96;--navy:#0b2a5b;--cyan:#1aa3d9;--bg:#f3f6f9;--muted:#5b6b7b}
+  *{box-sizing:border-box} [hidden]{display:none!important}
+  body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% 0%,#fdf1d8 0,transparent 40%),linear-gradient(180deg,#eaf4fa,#f3f6f9 60%);
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;color:#1c2b3a;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;padding:max(24px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+  .card{background:#fff;border-radius:24px;box-shadow:0 14px 40px rgba(11,42,91,.14);max-width:420px;width:100%;padding:30px 26px;text-align:center}
+  .app{width:150px;height:150px;border-radius:32px;box-shadow:0 6px 18px rgba(11,42,91,.15)}
+  h1{margin:18px 0 4px;font-size:1.6rem;color:var(--navy)} h1 span{color:var(--evg)}
+  p.sub{margin:0 0 22px;color:var(--muted)}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:14px;padding:15px;font-size:1.05rem;font-weight:700;
+    cursor:pointer;text-decoration:none}
+  .go{background:var(--evg);color:#fff} .go:hover{background:#00557a}
+  .inst{background:#e8f4fa;color:var(--evg);margin-top:10px}
+  .ios{display:none;margin-top:14px;background:#f6f8fa;border-radius:14px;padding:12px 14px;text-align:left;font-size:.92rem;color:#334}
+  .ios ol{margin:6px 0 0;padding-left:20px} .ios li{margin:4px 0}
+  .evg{width:210px;margin-top:26px}
+  footer{margin-top:18px;font-size:.78rem;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="app" src="icons/icon-512.png" alt="PracticumEVG">
+    <h1>Practicum<span>EVG</span></h1>
+    <p class="sub">Control y gestión del alumnado en prácticas</p>
+    <a class="btn go" id="go" href="#">Entrar con mi cuenta @fundacionloyola.es</a>
+    <button class="btn inst" id="install" hidden>📲 Instalar la aplicación</button>
+    <div class="ios" id="ios">
+      <b>Instalar en iPhone / iPad</b>
+      <ol>
+        <li>Abre esta página en <b>Safari</b>.</li>
+        <li>Pulsa el botón <b>Compartir</b> (cuadrado con flecha ↑).</li>
+        <li>Elige <b>«Añadir a pantalla de inicio»</b> y confirma.</li>
+      </ol>
+    </div>
+    <img class="evg" src="icons/logo-evg.png" alt="Jesuitas · Fundación Loyola · Escuela Virgen de Guadalupe">
+  </div>
+  <footer>Escuela Virgen de Guadalupe · Badajoz · Acceso restringido</footer>
+
+<script>
+  // ⚠️ Pega aquí la URL de la implementación web de Apps Script (termina en /exec)
+  const APP_URL = 'https://script.google.com/a/macros/fundacionloyola.es/s/AKfycbxZCCnpX-7ZsTW6xQMIbR1yKpdfxF43QCMj3_o9wIg-622dEJcTcdrZneUihZPepdWX/exec';
+
+  document.getElementById('go').href = APP_URL;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  // Abierta como app instalada: entra directamente
+  if (standalone && !APP_URL.includes('PEGAR_AQUI')) location.replace(APP_URL);
+
+  // Android / Chrome / Edge: botón de instalación
+  let deferred = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; document.getElementById('install').hidden = false; });
+  document.getElementById('install').onclick = async () => { if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; document.getElementById('install').hidden = true; };
+  // iOS: instrucciones
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS && !standalone) document.getElementById('ios').style.display = 'block';
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
